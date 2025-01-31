@@ -1,21 +1,29 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using MongoDB.Entities;
+using SearchService.Data;
+using SearchService.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Add controllers
+
 builder.Services.AddControllers();
 
-// Add services to the container.
-
-builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-// ✅ Ensure controllers are mapped
-app.UseRouting();
-app.UseAuthorization();
+// Configure the HTTP request pipeline.
+app.UseAuthentication();
+
 app.MapControllers();
 
+try
+{
+    await DbInitializer.InitDb(app);
+}
+catch (Exception e)
+{
+    Console.WriteLine(e);
+}
+
 app.Run();
+
